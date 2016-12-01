@@ -8,7 +8,7 @@ class profiles::pe_node (
   String $pcp_broker_host              = "momhost.example.com",
   String $puppetdb_host                = "momhost.example.com",
   String $puppet_master_host           = "momhost.example.com",
-  Array $activemq_brokers              = ["puppet.example.com"]
+  Array $activemq_brokers              = ["puppetvip.example.com"]
 ){
 
   # PE Declaration for all nodes

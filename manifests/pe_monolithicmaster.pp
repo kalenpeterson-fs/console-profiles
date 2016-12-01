@@ -1,8 +1,8 @@
 # == Class: profiles::pe_monolithicmaster
 #
 class profiles::pe_monolithicmaster (
-  String $pe_repo_master               = 'puppet.example.com',
-  Array $activemq_brokers              = ["puppet.example.com"],
+  String $pe_repo_master               = 'puppetmomvip.example.com',
+  Array $activemq_brokers              = ["puppetvip.example.com"],
   String $r10k_remote                  = "git@github.com:ljhooker/home_puppet.git",
   String $r10k_private_key             = "/opt/puppetlabs/puppet/id_rsa",
   Boolean $file_sync_enabled           = true,
