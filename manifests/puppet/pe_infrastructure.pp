@@ -1,6 +1,6 @@
 # == Class: profiles::pe_infrastructure
 #
-class profiles::pe_infrastructure (
+class profiles::puppet::pe_infrastructure (
   String $certificate_authority_host   = "momhost.example.com",
   String $console_host                 = "momhost.example.com",
   String $database_host                = "momhost.example.com",

@@ -1,6 +1,6 @@
 # == Class: profiles::pe_master
 #
-class profiles::pe_master (
+class profiles::puppet::pe_master (
   String $pe_repo_master               = 'puppetmomvip.example.com',
   Array $activemq_brokers              = ["puppetvip.example.com"],
   String $r10k_remote                  = "git@github.com:ljhooker/home_puppet.git",
