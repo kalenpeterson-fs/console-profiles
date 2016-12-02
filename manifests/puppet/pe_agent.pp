@@ -16,7 +16,7 @@ class profiles::puppet::pe_agent (
     group   => 'root',
     mode    => '0644',
     require => Class['puppet_enterprise::profile::agent'],
-    notify  => Service['puppet-agent'],
+    notify  => Service['puppet'],
     content => epp('profiles/puppet/etc_sysconfig_puppet.epp', {
       'enable_logdest' => $enable_logdest,
       'logdest'        => $logdest,
