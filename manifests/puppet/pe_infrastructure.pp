@@ -1,13 +1,13 @@
 # == Class: profiles::pe_infrastructure
 #
 class profiles::puppet::pe_infrastructure (
-  String $certificate_authority_host   = "momhost.example.com",
-  String $console_host                 = "momhost.example.com",
-  String $database_host                = "momhost.example.com",
-  Array $mcollective_middleware_hosts  = ["momhost.example.com"],
-  String $pcp_broker_host              = "momhost.example.com",
-  String $puppetdb_host                = "momhost.example.com",
-  String $puppet_master_host           = "momhost.example.com",
+  String $certificate_authority_host   = "c6ppmav10.forsythelab.net",
+  String $console_host                 = "c6ppmav10.forsythelab.net",
+  String $database_host                = "c6ppmav10.forsythelab.net",
+  Array $mcollective_middleware_hosts  = ["c6ppmav10.forsythelab.net"],
+  String $pcp_broker_host              = "c6ppmav10.forsythelab.net",
+  String $puppetdb_host                = "c6ppmav10.forsythelab.net",
+  String $puppet_master_host           = "c6ppmav10.forsythelab.net",
 ){
   # PE Declaration for all nodes
   class { 'puppet_enterprise':

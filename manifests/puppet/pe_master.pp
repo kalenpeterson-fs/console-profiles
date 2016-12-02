@@ -1,11 +1,10 @@
 # == Class: profiles::pe_master
 #
 class profiles::puppet::pe_master (
-  String $pe_repo_master               = 'puppetmomvip.example.com',
-  Array $activemq_brokers              = ["puppetvip.example.com"],
-  String $r10k_remote                  = "git@github.com:ljhooker/home_puppet.git",
-  String $r10k_private_key             = "/opt/puppetlabs/puppet/id_rsa",
-  Boolean $file_sync_enabled           = true,
+  String $pe_repo_master               = 'puppetcpm01.forsythelab.net',
+  Array $activemq_brokers              = ["puppetcpm01.forsythelab.net"],
+  String $r10k_remote                  = "git@c6glabv01.forsythelab.net:kpeterson/c6ppmav10-control.git",
+  String $r10k_private_key             = "/etc/puppetlabs/puppetserver/ssh/id_rsa",
   Boolean $code_manager_auto_configure = true
 ){
 
@@ -21,7 +20,6 @@ class profiles::puppet::pe_master (
   class { '::puppet_enterprise::profile::master':
     r10k_remote                 => $r10k_remote,
     r10k_private_key            => $r10k_private_key,
-    file_sync_enabled           => $file_sync_enabled,
     code_manager_auto_configure => $code_manager_auto_configure,
   }
 
