@@ -1,5 +1,5 @@
 {
-  "name": "multiplan-profiles",
+  "name": "console-profiles",
   "version": "0.1.0",
   "author": "multiplan",
   "summary": null,
@@ -12,4 +12,3 @@
   ],
   "data_provider": null
 }
-
