@@ -1,0 +1,12 @@
+<%- | Boolean $enable_logdest,
+      String $logdest,
+      Boolean $enable_debug,
+      Boolean $enable_verbose,
+| -%>
+# This file is being managed by puppet! Changes made here will be reverted!
+# You may specify parameters to the puppet client here
+<% if $enable_log or $enable_debug or $enable_verbose { -%>
+PUPPET_EXTRA_OPTS=<% if $enable_log { -%>--logdest=<%= $log_path %> <% } -%><% if $enable_debug { -%>--debug <% } -%><% if $enable_verbose { -%>--verbose <% } -%>
+<% } else { -%>
+#PUPPET_EXTRA_OPTS=--waitforcert=500
+<% } -%>

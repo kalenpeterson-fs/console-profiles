@@ -1,0 +1,11 @@
+<%- | String  $log_path
+| -%>
+# This file is being managed by puppet! Changes made here will be reverted!
+<%= $log_path %> {
+    size 10m
+    missingok
+    rotate 4
+    compress
+    copytruncate
+    notifempty
+}
