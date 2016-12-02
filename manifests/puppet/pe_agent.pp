@@ -17,11 +17,11 @@ class profiles::puppet::pe_agent (
     mode    => '0644',
     require => Class['puppet_enterprise::profile::agent'],
     notify  => Service['puppet-agent']
-    content => epp('profiles/puppet/etc_sysconfig_puppet', {
+    content => epp('profiles/puppet/etc_sysconfig_puppet.epp', {
       'enable_logdest' => $enable_logdest,
       'logdest'        => $logdest,
       'enable_debug'   => $enable_debug,
-      'enable_verbose' => $enable_verbose}),
+      'enable_verbose' => $enable_verbose,}),
   }
 
   # If the pe-agent log is enabled, create a logrotate.d file for it
@@ -34,7 +34,7 @@ class profiles::puppet::pe_agent (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => epp ('profiles/puppet/logrotate_pe-agent.pp', {
+    content => epp ('profiles/puppet/logrotate_pe-agent.epp', {
       'log_path' => $logdest,}),
   }
 }
