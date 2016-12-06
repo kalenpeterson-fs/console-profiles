@@ -1,16 +1,26 @@
 # == Class: profiles::puppet::pe_master_backup
 #
 class profiles::puppet::pe_master_backup (
-    String $backup_dir    = '/opt/puppetlabs/puppet_backups',
-    Array $backup_hour    = [2],
-    String $backup_minute = '0',
-    Boolean $enable       = true
+    String $backup_dir            = '/opt/puppetlabs/puppet_backups',
+    Array $backup_hour            = [2],
+    String $backup_minute         = '0',
+    String $backup_retention_days = '14',
+    Boolean $enable               = true
 ){
 
   # Manage Enabling or Disabling backup
   if $enable {
     $ensure_script = file
     $ensure_cronjob = present
+
+    # Manage retention of backup files
+    tidy { 'pe_master_backup_retention':
+      path    => $backup_dir,
+      age     => $backup_retention_days,
+      type    => 'ctime',
+      recurse => false,
+      matches => [ 'pe_backup.*.tar.gz'],
+    }
   } else {
     $ensure_script = absent
     $ensure_cronjob = absent
