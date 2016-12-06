@@ -18,7 +18,7 @@ class profiles::puppet::pe_master_backup (
       path    => $backup_dir,
       age     => $backup_retention_days,
       type    => 'ctime',
-      recurse => false,
+      recurse => 1,
       matches => [ 'pe_backup.*.tar.gz'],
     }
   } else {
