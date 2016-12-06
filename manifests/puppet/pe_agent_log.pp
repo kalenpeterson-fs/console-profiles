@@ -3,33 +3,54 @@
 class profiles::puppet::pe_agent_log (
   Boolean $enable_logdest = false,
   String $logdest         = '/var/log/puppetlabs/puppet/pe-agent.log',
-  Boolean $enable_debug   = false,
-  Boolean $enable_verbose = false,
+  String $syslog_facility = 'local5',
+  String $puppet_confdir  = '/etc/puppetlabs/puppet'
 ){
 
-  # Manage the puppet sysconfig file
-  # Allow the --logdest parameter to be specified here
-  file { '/etc/sysconfig/puppet':
-    ensure  => file,
+  # Enable or disable this profile
+  if $enable_logdest {
+    $enable_file = file
+    $enable_ini  = present
+  } else {
+    $enable_file = absent
+    $enable_ini  = absent
+  }
+
+  # OS Based logic
+  case $::osfamily {
+    'RedHat': {
+      $syslog_file     = '/etc/rsyslog.d/pe-puppet.conf'
+      $syslog_template = 'rsyslog_pe-agent.epp'
+      $logrotate_file  = '/etc/logrotate.d/pe-agent'
+    }
+    default: {
+      fail("Module 'profiles::puppet::pe_agent_log does' not support OS ${::osfamily}")
+    }
+  }
+
+  # Manage the puppet.conf syslog setting
+  pe_ini_setting { 'puppet_conf_syslog_facility':
+    ensure  => $enable_ini,
+    path    => "${puppet_confdir}/puppet.conf",
+    section => 'main',
+    setting => 'syslogfacility',
+    value   => $syslog_facility,
+  }
+
+  # Manage the syslog file
+  file { $syslog_file:
+    ensure  => $enable_file,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    require => Class['puppet_enterprise::profile::agent'],
-    #notify  => Service['puppet'],
-    content => epp('profiles/puppet/etc_sysconfig_puppet.epp', {
-      'enable_logdest' => $enable_logdest,
-      'logdest'        => $logdest,
-      'enable_debug'   => $enable_debug,
-      'enable_verbose' => $enable_verbose,}),
+    content => epp ("profiles/puppet/${syslog_template}", {
+      'faciity'  => $syslog_facility,
+      'log_dest' => $logdest,}),
   }
 
-  # If the pe-agent log is enabled, create a logrotate.d file for it
-  $pe_agent_logrotate = $enable_logdest ? {
-    true    => file,
-    default => absent,
-  }
-  file {'/etc/logrotate.d/pe-agent':
-    ensure  => $pe_agent_logrotate,
+  # Manage the logrotate.d config for pe-agent
+  file { $logrotate_file:
+    ensure  => $enable_file,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
