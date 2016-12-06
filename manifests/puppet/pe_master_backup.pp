@@ -1,11 +1,11 @@
 # == Class: profiles::puppet::pe_master_backup
 #
 class profiles::puppet::pe_master_backup (
-    String $backup_dir            = '/opt/puppetlabs/puppet_backups',
-    Array $backup_hour            = [2],
-    String $backup_minute         = '0',
-    String $backup_retention_days = '14',
-    Boolean $enable               = true
+    String $backup_dir         = '/opt/puppetlabs/puppet_backups',
+    Array $backup_hour         = [2],
+    String $backup_minute      = '0',
+    Int $backup_retention_days = 14,
+    Boolean $enable            = true
 ){
 
   # Manage Enabling or Disabling backup
@@ -16,7 +16,7 @@ class profiles::puppet::pe_master_backup (
     # Manage retention of backup files
     tidy { 'pe_master_backup_retention':
       path    => $backup_dir,
-      age     => $backup_retention_days,
+      age     => "${backup_retention_days}d",
       type    => 'ctime',
       recurse => 1,
       matches => [ 'pe_backup.*.tar.gz'],
