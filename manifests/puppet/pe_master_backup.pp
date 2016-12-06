@@ -4,7 +4,7 @@ class profiles::puppet::pe_master_backup (
     String $backup_dir         = '/opt/puppetlabs/puppet_backups',
     Array $backup_hour         = [2],
     String $backup_minute      = '0',
-    Int $backup_retention_days = 14,
+    Integer $backup_retention_days = 14,
     String $script_dir         = '/opt/puppetlabs/server/bin',
     Boolean $enable            = true
 ){
