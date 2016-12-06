@@ -5,6 +5,7 @@ class profiles::puppet::pe_master_backup (
     Array $backup_hour         = [2],
     String $backup_minute      = '0',
     Int $backup_retention_days = 14,
+    String $script_dir         = '/opt/puppetlabs/server/bin',
     Boolean $enable            = true
 ){
 
@@ -32,7 +33,7 @@ class profiles::puppet::pe_master_backup (
   # Manage the  Backup Script
   file { 'pe_master_backup_script':
     ensure  => $ensure_script,
-    path    => "${backup_dir}/pe_master_backup.sh",
+    path    => "${script_dir}/pe_master_backup.sh",
     owner   => 'root',
     group   => 'root',
     mode    => '0750',
@@ -43,7 +44,7 @@ class profiles::puppet::pe_master_backup (
   # Manage the Restore Script
   file { 'pe_master_restore_script':
     ensure  => $ensure_script,
-    path    => "${backup_dir}/pe_master_restore.sh",
+    path    => "${script_dir}/pe_master_restore.sh",
     owner   => 'root',
     group   => 'root',
     mode    => '0750',
@@ -54,7 +55,7 @@ class profiles::puppet::pe_master_backup (
   # Manage the cronjob to run pe_master_backup.sh
   cron { 'pe_master_backup_cronjob':
     ensure  => $ensure_cronjob,
-    command => "'${backup_dir}/pe_master_backup.sh' -d '${backup_dir}'",
+    command => "'${script_dir}/pe_master_backup.sh' -d '${backup_dir}'",
     user    => 'root',
     hour    => $backup_hour,
     minute  => $backup_minute,
