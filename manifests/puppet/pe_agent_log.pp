@@ -47,7 +47,6 @@ class profiles::puppet::pe_agent_log (
     section => 'main',
     setting => 'syslogfacility',
     value   => $syslog_facility,
-    notify  => Service['puppet'],
   }
 
   # Manage the syslog file
