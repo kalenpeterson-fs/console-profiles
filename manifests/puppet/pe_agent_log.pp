@@ -57,7 +57,7 @@ class profiles::puppet::pe_agent_log (
     group   => 'root',
     mode    => '0644',
     content => epp ("profiles/puppet/${syslog_template}", {
-      'faciity'  => $syslog_facility,
+      'facility'  => $syslog_facility,
       'log_dest' => $logdest,}),
   }
 
