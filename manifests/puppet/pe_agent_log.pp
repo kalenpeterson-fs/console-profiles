@@ -7,25 +7,34 @@ class profiles::puppet::pe_agent_log (
   String $puppet_confdir  = '/etc/puppetlabs/puppet'
 ){
 
-  # Enable or disable this profile
-  if $enable_logdest {
-    $enable_file = file
-    $enable_ini  = present
-  } else {
-    $enable_file = absent
-    $enable_ini  = absent
-  }
-
   # OS Based logic
   case $::osfamily {
     'RedHat': {
       $syslog_file     = '/etc/rsyslog.d/pe-puppet.conf'
       $syslog_template = 'rsyslog_pe-agent.epp'
       $logrotate_file  = '/etc/logrotate.d/pe-agent'
+      $syslog_service  = 'rsyslog'
     }
     default: {
       fail("Module 'profiles::puppet::pe_agent_log does' not support OS ${::osfamily}")
     }
+  }
+
+  # Enable or disable this profile
+  if $enable_logdest {
+    $enable_file = file
+    $enable_ini  = present
+
+    # Manage the syslog service if it's running
+    #  This should be removed when a syslog profile has been
+    #  added to the base
+    service  { $syslog_service:
+      ensure    => 'running',
+      subscribe => File[$syslog_file],
+    }
+  } else {
+    $enable_file = absent
+    $enable_ini  = absent
   }
 
   # Manage the puppet.conf syslog setting
@@ -35,6 +44,7 @@ class profiles::puppet::pe_agent_log (
     section => 'main',
     setting => 'syslogfacility',
     value   => $syslog_facility,
+    notify  => Service['puppet'],
   }
 
   # Manage the syslog file
