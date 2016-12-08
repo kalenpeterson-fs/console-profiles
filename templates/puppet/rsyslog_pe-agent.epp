@@ -1,4 +1,4 @@
-<%- | String  $facility
+<%- | String  $facility,
       String  $log_dest
 | -%>
 # This file is being managed by puppet! Changes made here will be reverted!
