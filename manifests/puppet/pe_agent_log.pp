@@ -1,7 +1,7 @@
 # == Class: profiles::pe_agent_log
 #
 class profiles::puppet::pe_agent_log (
-  Boolean $enable_logdest = false,
+  Boolean $enable_logdest = true,
   String $logdest         = '/var/log/puppetlabs/puppet/pe-agent.log',
   String $syslog_facility = 'local5',
   String $puppet_confdir  = '/etc/puppetlabs/puppet'
