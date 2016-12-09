@@ -45,7 +45,7 @@ F_Usage () {
   echo "  -f    *Required* Specify the pe_backup archive file to restore"
   echo "  -d    *Optional* Specity the temporary working directory to extract the sql backup"
   echo "  -h    Print this usage info"
-  echo 
+  echo
   echo "This script will restore a PE Master Backup archive created with the pe_master_backup.sh script."
   echo
   echo "It must be run on the PE Master or Master of Masters."
@@ -137,62 +137,65 @@ echo "TAR File is: $ARCHIVE_FILE"
 # Stop Puppet Services
 echo
 echo "Stopping PE Services"
-puppet resource service puppet ensure=stopped
-puppet resource service pe-puppetserver ensure=stopped
-puppet resource service pe-orchestration-services ensure=stopped
-puppet resource service pe-nginx ensure=stopped
-puppet resource service pe-puppetdb ensure=stopped
-puppet resource service pe-console-services ensure=stopped
+puppet resource service puppet ensure=stopped || exit 3
+puppet resource service pe-puppetserver ensure=stopped || exit 4
+puppet resource service pe-orchestration-services ensure=stopped || exit 5
+puppet resource service pe-nginx ensure=stopped || exit 6
+puppet resource service pe-puppetdb ensure=stopped || exit 7
+puppet resource service pe-console-services ensure=stopped || exit 8
 
 # Restore Database
 echo
 echo "Restoring Database"
-tar -xzf "$ARCHIVE_FILE" -C "$TMP_RESTORE_DIR" "$TMP_SQL_FILE"
+tar -xzf "$ARCHIVE_FILE" -C "$TMP_RESTORE_DIR" "$TMP_SQL_FILE" || exit 9
 sudo -u pe-postgres /opt/puppetlabs/server/apps/postgresql/bin/psql < \
-  "$TMP_RESTORE_DIR/$TMP_SQL_FILE"
+  "$TMP_RESTORE_DIR/$TMP_SQL_FILE" || exit 10
 
 # Clear install files
 echo
 echo "Deleting install files"
-rm -rf /etc/puppetlabs/puppet/ssl/*
-rm -rf /etc/puppetlabs/puppetdb/ssl/*
+rm -rf /opt/puppetlabs/etc/puppetlabs/puppet/ssl/*
+rm -rf /opt/puppetlabs/etc/puppetlabs/puppetdb/ssl/*
 rm -rf /opt/puppetlabs/server/data/postgresql/9.4/data/certs/*
 rm -rf /opt/puppetlabs/server/data/console-services/certs/*
 
 # Restore required files from archive
 echo
 echo "Restoring files from archive"
-tar -xzf "$ARCHIVE_FILE" -C / etc/puppetlabs/puppet/puppet.conf
-tar -xzf "$ARCHIVE_FILE" -C / etc/puppetlabs/puppet/ssl
-tar -xzf "$ARCHIVE_FILE" -C / etc/puppetlabs/puppetdb/ssl
-tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/server/data/postgresql/9.4/data/certs
-tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/server/data/console-services/certs
+tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/etc/puppetlabs/puppet/puppet.conf || exit 11
+tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/etc/puppetlabs/puppet/ssl || exit 12
+tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/etc/puppetlabs/puppetdb/ssl || exit 13
+tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/server/data/postgresql/9.4/data/certs || exit 14
+tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/server/data/console-services/certs || exit 15
+tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/server/data/puppetserver/.ssh || exit 16
+tar -xzpf "$ARCHIVE_FILE" -C / opt/app/pe-api || exit 17
 
 # Clear Cache
 echo
 echo "Removing cached catalog"
-rm -f /opt/puppetlabs/puppet/cache/client_data/catalog/`hostname`.json
+rm -f /opt/puppetlabs/puppet/cache/client_data/catalog/`hostname`.json || exit 18
 
 # Chown restored files
 echo
 echo "Chowning Restored files"
-chown pe-puppet:pe-puppet /etc/puppetlabs/puppet/puppet.conf
-chown -R pe-puppet:pe-puppet /etc/puppetlabs/puppet/ssl/
-chown -R pe-console-services /opt/puppetlabs/server/data/console-services/certs/
-chown -R pe-postgres:pe-postgres /opt/puppetlabs/server/data/postgresql/9.4/data/certs/
-chown -R pe-puppetdb:pe-puppetdb /etc/puppetlabs/puppetdb/ssl/
+chown pe-puppet:pe-puppet /opt/puppetlabs/etc/puppetlabs/puppet/puppet.conf || exit 19
+chown -R pe-puppet:pe-puppet /opt/puppetlabs/etc/puppetlabs/puppet/ssl/ || exit 20
+chown -R pe-console-services /opt/puppetlabs/server/data/console-services/certs/ || exit 21
+chown -R pe-postgres:pe-postgres /opt/puppetlabs/server/data/postgresql/9.4/data/certs/ || exit 22
+chown -R pe-puppetdb:pe-puppetdb /etc/puppetlabs/puppetdb/ssl/ || exit 23
+chown -R pe-puppet:pe-puppet /opt/puppetlabs/server/data/puppetserver/.ssh || exit 24
 
 # Restart Puppet Services
 echo
 echo "Starting PE Services"
-puppet resource service pe-puppetserver ensure=running
-puppet resource service pe-orchestration-services ensure=running
-puppet resource service pe-nginx ensure=running
-puppet resource service pe-postgresql ensure=stopped
-puppet resource service pe-postgresql ensure=running
-puppet resource service pe-puppetdb ensure=running
-puppet resource service pe-console-services ensure=running
-puppet resource service puppet ensure=running
+puppet resource service pe-puppetserver ensure=running || exit 25
+puppet resource service pe-orchestration-services ensure=running || exit 26
+puppet resource service pe-nginx ensure=running || exit 27
+puppet resource service pe-postgresql ensure=stopped || exit 28
+puppet resource service pe-postgresql ensure=running || exit 29
+puppet resource service pe-puppetdb ensure=running || exit 30
+puppet resource service pe-console-services ensure=running || exit 31
+puppet resource service puppet ensure=running || exit 32
 
 echo
 echo "PE Master Restore complete"
