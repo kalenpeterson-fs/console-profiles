@@ -7,7 +7,6 @@
 #  You must have a functinall master installed and running
 #
 #  Process being followed
-#   - Keep a copy of /etc/puppetlabs in $BACKUP_DIR
 #   - Archive all config files, certificates, and keys
 #   - Backup the PuppetDB and add to archive
 #
@@ -17,12 +16,13 @@
 #
 #  Usage: See F_Usage
 #
-#  Written by: Kalen Peterson <kpeterson@forsythe.com> 
+#  Written by: Kalen Peterson <kpeterson@forsythe.com>
 #  Created on: 11/23/2016
 
 # Set Initial Variables
 TIMESTAMP=`date +"%m%d%Y-%H%M%S"`
-ARCHIVE_FILE="pe_backup.$TIMESTAMP.tar.gz"
+HOSTNAME=`hostname -s`
+ARCHIVE_FILE="pe_backup.$HOSTNAME.$TIMESTAMP.tar.gz"
 SQL_FILE="pe_sql_backup.sql"
 
 
@@ -104,23 +104,25 @@ trap F_Exit EXIT
 ##################
 ## Perform Backup
 ##################
-# Keep a copy of /etc/puppetlabs in $BACKUP_DIR
-echo
-echo "Start raw copy of /etc/puppetlabs"
-cp -rp /etc/puppetlabs "$BACKUP_DIR"
 
 # Backup the PuppetDB
+#  This is a postgres hotbackup
 echo
 echo "Starting DB Dump"
-touch "$BACKUP_DIR/$SQL_FILE"
-chown pe-postgres: "$BACKUP_DIR/$SQL_FILE"
-chmod 640 "$BACKUP_DIR/$SQL_FILE"
+touch "$BACKUP_DIR/$SQL_FILE" \
+  || exit 4
+chown pe-postgres: "$BACKUP_DIR/$SQL_FILE" \
+  || exit 5
+chmod 640 "$BACKUP_DIR/$SQL_FILE" \
+  || exit 6
 sudo -u pe-postgres \
   /opt/puppetlabs/server/apps/postgresql/bin/pg_dumpall \
-  -c -f "$BACKUP_DIR/$SQL_FILE"
+  -c -f "$BACKUP_DIR/$SQL_FILE" \
+  || exit 7
 
 # Create an archive file with..
-#  - Configuration
+#  - Configuration directory & symlink
+#  - pe-api home directory
 #  - Puppet DB
 #  - Certificates
 #  - Keys
@@ -128,10 +130,15 @@ echo
 echo "Starting Archive of files"
 tar -czf "$BACKUP_DIR/$ARCHIVE_FILE" -C "$BACKUP_DIR" \
   /etc/puppetlabs \
+  /opt/puppetlabs/etc/puppetlabs \
+  /opt/app/pe-api \
   /opt/puppetlabs/server/data/console-services/certs \
   /opt/puppetlabs/server/data/postgresql/9.4/data/certs \
-  "$SQL_FILE"
-chmod 640 "$BACKUP_DIR/$ARCHIVE_FILE"
+  /opt/puppetlabs/server/data/puppetserver/.ssh \
+  "$SQL_FILE" \
+  || exit 8
+chmod 640 "$BACKUP_DIR/$ARCHIVE_FILE" \
+  || exit 9
 
 echo
 echo "PE Master backup Complete"
