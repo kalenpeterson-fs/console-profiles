@@ -122,7 +122,7 @@ if [[ $? -ne 0 ]]; then
 fi
 
 # Copy Restore file
-scp -i $SSH_KEY -o StrictHostKeyChecking=no -i $SSH_KEY \
+scp -o StrictHostKeyChecking=no -i $SSH_KEY \
   $BACKUP_FILE $USERNAME@$PRIMARY_IP:/tmp
 if [[ $? -ne 0 ]]; then
   echo
