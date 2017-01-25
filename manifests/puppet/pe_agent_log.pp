@@ -23,7 +23,6 @@ class profiles::puppet::pe_agent_log (
   # Enable or disable this profile
   if $enable_logdest {
 
-    notify { "Enabling PE Logdest": }
     $enable_file = file
     $enable_ini  = present
 
@@ -35,7 +34,6 @@ class profiles::puppet::pe_agent_log (
       subscribe => File[$syslog_file],
     }
   } else {
-    notify { "Disabling PE Logdest": }
     $enable_file = absent
     $enable_ini  = absent
   }

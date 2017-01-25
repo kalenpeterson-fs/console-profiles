@@ -23,7 +23,7 @@ class profiles::puppet::pe_master_dr_recovery (
     path   => $working_dir,
   }
 
-  # Deploy the bakcup script
+  # Deploy the backup script
   file { 'dr_backup_script':
     ensure  => file,
     path    => $backup_script,
@@ -57,7 +57,6 @@ class profiles::puppet::pe_master_dr_recovery (
       command   => "touch ${working_dir}/activated",
       path      => '/bin:/usr/bin',
       logoutput => true,
-      creates   => "${working_dir}/activated",
       onlyif    => "ping -c 4 -W 5 -t 5 ${pe_mom_ip_address}",
       notify    => Exec['backup_dr_mom'],
     }
@@ -94,7 +93,7 @@ class profiles::puppet::pe_master_dr_recovery (
 
     # Execure the Backup Restore
     exec { 'restore_backup':
-      command     => "ssh -o StrictHostKeyChecking=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} '${restore_command}'; touch ${working_dir}/recovered",
+      command     => "ssh -t -o StrictHostKeyChecking=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} '${restore_command}'; touch ${working_dir}/recovered",
       path        => '/bin:/usr/bin',
       logoutput   => true,
       creates     => "${working_dir}/recovered",
