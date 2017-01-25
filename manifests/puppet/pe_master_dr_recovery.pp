@@ -27,7 +27,7 @@ class profiles::puppet::pe_master_dr_recovery (
   file { 'dr_backup_script':
     ensure  => file,
     path    => $backup_script,
-    source  => 'puppet:///modules/profiles/pe_master_backup.sh',
+    source  => 'puppet:///modules/profiles/puppet/pe_master_backup.sh',
     owner   => 'root',
     group   => 'root',
     mode    => '0750',
@@ -39,7 +39,7 @@ class profiles::puppet::pe_master_dr_recovery (
   file { 'dr_restore_script':
     ensure  => file,
     path    => $restore_script,
-    source  => 'puppet:///modules/profiles/pe_master_restore.sh',
+    source  => 'puppet:///modules/profiles/puppet/pe_master_restore.sh',
     owner   => 'root',
     group   => 'root',
     mode    => '0750',
