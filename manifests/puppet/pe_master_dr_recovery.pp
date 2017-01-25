@@ -17,7 +17,7 @@ class profiles::puppet::pe_master_dr_recovery (
   $restore_command = "/tmp/pe_master_restore.sh -f /tmp/${backup_filename}"
   #$restore_command = "echo '/tmp/pe_master_restore.sh -f /tmp/${backup_filename}'"
 
-  # Manage the working dir everything we'll do here
+  # Manage the working dir for everything we'll do here
   file { 'working_dir':
     ensure => directory,
     path   => $working_dir,
