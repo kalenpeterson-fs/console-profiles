@@ -67,7 +67,6 @@ class profiles::puppet::pe_master_dr_recovery (
       command     => "${backup_script} -d ${working_dir} -n ${backup_filename}",
       path        => '/bin:/usr/bin',
       logoutput   => true,
-      creates     => "${working_dir}/${backup_filename}",
       refreshonly => true,
       notify      => Exec['scp_restore_script'],
     }
