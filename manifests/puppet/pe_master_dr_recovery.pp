@@ -50,7 +50,7 @@ class profiles::puppet::pe_master_dr_recovery (
   # Validate that we are NOT the Primary MoM
   if $::fqdn != $pe_mom_fqdn {
 
-    notify { "Current FQDN is NOT the Primary MoM, checking if DR Recovery is possible": }
+    notify { "Current FQDN is NOT the Primary MoM, Processing a DR Recovery": }
 
     # Detect and activate recovery
     exec { 'dr_recovery':
