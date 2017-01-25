@@ -14,8 +14,8 @@ class profiles::puppet::pe_master_dr_recovery (
   $backup_script   = "${working_dir}/pe_master_backup.sh"
   $restore_script  = "${working_dir}/pe_master_restore.sh"
   $backup_filename = "dr_recovery.${::hostname}.tar.gz"
-  #$restore_command = "/tmp/pe_master_restore.sh -f /tmp/${backup_filename}"
-  $restore_command = "echo '/tmp/pe_master_restore.sh -f /tmp/${backup_filename}'"
+  $restore_command = "/tmp/pe_master_restore.sh -f /tmp/${backup_filename}"
+  #$restore_command = "echo '/tmp/pe_master_restore.sh -f /tmp/${backup_filename}'"
 
   # Manage the working dir everything we'll do here
   file { 'working_dir':
