@@ -56,10 +56,13 @@ F_Exit () {
 ## Arguments
 #############
 # Manage Options
-while getopts :d:h FLAG; do
+while getopts :d:n:h FLAG; do
   case $FLAG in
     d)  # Set the Restore File Location
         BACKUP_DIR=$OPTARG
+        ;;
+    n)  # Set the Archive File Name
+        ARCHIVE_FILE=$OPTARG
         ;;
     h)  # Show Usage
         F_Usage
