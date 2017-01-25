@@ -58,6 +58,7 @@ class profiles::puppet::pe_master_dr_recovery (
       path      => '/bin:/usr/bin',
       logoutput => true,
       onlyif    => "ping -c 4 -W 5 -t 5 ${pe_mom_ip_address}",
+      creates   => "${working_dir}/recovered",
       notify    => Exec['backup_dr_mom'],
     }
 
@@ -96,7 +97,6 @@ class profiles::puppet::pe_master_dr_recovery (
       command     => "ssh -o StrictHostKeyChecking=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} '${restore_command}'; touch ${working_dir}/recovered",
       path        => '/bin:/usr/bin',
       logoutput   => true,
-      creates     => "${working_dir}/recovered",
       refreshonly => true,
     }
   }
