@@ -142,14 +142,8 @@ puppet resource service pe-puppetserver ensure=stopped || exit 4
 puppet resource service pe-orchestration-services ensure=stopped || exit 5
 puppet resource service pe-nginx ensure=stopped || exit 6
 puppet resource service pe-puppetdb ensure=stopped || exit 7
-puppet resource service pe-console-services ensure=stopped || exit 8
-
-# Restore Database
-echo
-echo "Restoring Database"
-tar -xzf "$ARCHIVE_FILE" -C "$TMP_RESTORE_DIR" "$TMP_SQL_FILE" || exit 9
-sudo -u pe-postgres /opt/puppetlabs/server/apps/postgresql/bin/psql < \
-  "$TMP_RESTORE_DIR/$TMP_SQL_FILE" || exit 10
+puppet resource service pe-postgresql ensure=stopped || exit 8
+puppet resource service pe-console-services ensure=stopped || exit 9
 
 # Clear install files
 echo
@@ -162,37 +156,45 @@ rm -rf /opt/puppetlabs/server/data/console-services/certs/*
 # Restore required files from archive
 echo
 echo "Restoring files from archive"
-tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/etc/puppetlabs/puppet/puppet.conf || exit 11
-tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/etc/puppetlabs/puppet/ssl || exit 12
-tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/etc/puppetlabs/puppetdb/ssl || exit 13
-tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/server/data/postgresql/9.4/data/certs || exit 14
-tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/server/data/console-services/certs || exit 15
-tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/server/data/puppetserver/.ssh || exit 16
-tar -xzpf "$ARCHIVE_FILE" -C / opt/app/pe-api || exit 17
+tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/etc/puppetlabs/puppet/puppet.conf || exit 10
+tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/etc/puppetlabs/puppet/ssl || exit 11
+tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/etc/puppetlabs/puppetdb/ssl || exit 12
+tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/server/data/postgresql/9.4/data/certs || exit 13
+tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/server/data/console-services/certs || exit 14
+tar -xzf "$ARCHIVE_FILE" -C / opt/puppetlabs/server/data/puppetserver/.ssh || exit 15
+tar -xzpf "$ARCHIVE_FILE" -C / opt/app/pe-api || exit 16
 
 # Clear Cache
 echo
 echo "Removing cached catalog"
-rm -f /opt/puppetlabs/puppet/cache/client_data/catalog/`hostname`.json || exit 18
+rm -f /opt/puppetlabs/puppet/cache/client_data/catalog/`hostname`.json || exit 17
 
 # Chown restored files
 echo
 echo "Chowning Restored files"
-chown pe-puppet:pe-puppet /opt/puppetlabs/etc/puppetlabs/puppet/puppet.conf || exit 19
-chown -R pe-puppet:pe-puppet /opt/puppetlabs/etc/puppetlabs/puppet/ssl/ || exit 20
-chown -R pe-console-services /opt/puppetlabs/server/data/console-services/certs/ || exit 21
-chown -R pe-postgres:pe-postgres /opt/puppetlabs/server/data/postgresql/9.4/data/certs/ || exit 22
-chown -R pe-puppetdb:pe-puppetdb /etc/puppetlabs/puppetdb/ssl/ || exit 23
-chown -R pe-puppet:pe-puppet /opt/puppetlabs/server/data/puppetserver/.ssh || exit 24
+chown pe-puppet:pe-puppet /opt/puppetlabs/etc/puppetlabs/puppet/puppet.conf || exit 18
+chown -R pe-puppet:pe-puppet /opt/puppetlabs/etc/puppetlabs/puppet/ssl/ || exit 19
+chown -R pe-console-services /opt/puppetlabs/server/data/console-services/certs/ || exit 20
+chown -R pe-postgres:pe-postgres /opt/puppetlabs/server/data/postgresql/9.4/data/certs/ || exit 21
+chown -R pe-puppetdb:pe-puppetdb /etc/puppetlabs/puppetdb/ssl/ || exit 22
+chown -R pe-puppet:pe-puppet /opt/puppetlabs/server/data/puppetserver/.ssh || exit 23
+
+# Restore Database
+echo
+echo "Starting Postgres"
+puppet resource service pe-postgresql ensure=running || exit 24
+echo
+echo "Restoring Database"
+tar -xzf "$ARCHIVE_FILE" -C "$TMP_RESTORE_DIR" "$TMP_SQL_FILE" || exit 25
+sudo -u pe-postgres /opt/puppetlabs/server/apps/postgresql/bin/psql < \
+  "$TMP_RESTORE_DIR/$TMP_SQL_FILE" || exit 26
 
 # Restart Puppet Services
 echo
 echo "Starting PE Services"
-puppet resource service pe-puppetserver ensure=running || exit 25
-puppet resource service pe-orchestration-services ensure=running || exit 26
-puppet resource service pe-nginx ensure=running || exit 27
-puppet resource service pe-postgresql ensure=stopped || exit 28
-puppet resource service pe-postgresql ensure=running || exit 29
+puppet resource service pe-puppetserver ensure=running || exit 27
+puppet resource service pe-orchestration-services ensure=running || exit 28
+puppet resource service pe-nginx ensure=running || exit 29
 puppet resource service pe-puppetdb ensure=running || exit 30
 puppet resource service pe-console-services ensure=running || exit 31
 puppet resource service puppet ensure=running || exit 32
