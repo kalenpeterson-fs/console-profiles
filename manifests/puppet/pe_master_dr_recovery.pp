@@ -1,12 +1,10 @@
 # == Class: profiles::puppet::pe_master_dr_recovery
 #
 class profiles::puppet::pe_master_dr_recovery (
-    $enable_autorecover = true,
     $pe_mom_ip_address  = '10.227.100.70',
     $pe_mom_fqdn        = 'c6ppmav10.forsythelab.net',
     $remote_user        = 'root',
     $remote_user_key    = '/root/.ssh/id_rsa',
-    $script_dir         = '/opt/puppetlabs/server/bin',
     $working_dir        = '/opt/puppetlabs/dr_recovery',
 ){
 
@@ -15,8 +13,7 @@ class profiles::puppet::pe_master_dr_recovery (
   $restore_script  = "${working_dir}/pe_master_restore.sh"
   $backup_filename = "dr_recovery.${::hostname}.tar.gz"
   $restore_rc      = "/tmp/pe_master_restore.rc"
-  $restore_command = "/tmp/pe_master_restore.sh -f /tmp/${backup_filename}; echo $? >${restore_rc}"
-  #$restore_command = "echo '/tmp/pe_master_restore.sh -f /tmp/${backup_filename}'"
+  $restore_command = "/tmp/pe_master_restore.sh -f /tmp/${backup_filename}"
 
   # Manage the working dir for everything we'll do here
   file { 'working_dir':
@@ -95,6 +92,7 @@ class profiles::puppet::pe_master_dr_recovery (
     exec { 'restore_backup':
       command     => "ssh -o StrictHostKeyChecking=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} '${restore_command}'; touch ${working_dir}/recovered",
       path        => '/bin:/usr/bin',
+      timeout     => '600',
       logoutput   => true,
       refreshonly => true,
     }
