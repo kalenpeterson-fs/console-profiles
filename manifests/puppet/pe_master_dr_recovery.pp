@@ -32,7 +32,6 @@ class profiles::puppet::pe_master_dr_recovery (
     group   => 'root',
     mode    => '0750',
     require => File['working_dir'],
-    before  => Exec['dr_recovery'],
   }
 
   # Deploy the restore script
@@ -44,7 +43,6 @@ class profiles::puppet::pe_master_dr_recovery (
     group   => 'root',
     mode    => '0750',
     require => File['working_dir'],
-    before  => Exec['dr_recovery'],
   }
 
   # Validate that we are NOT the Primary MoM
@@ -57,6 +55,7 @@ class profiles::puppet::pe_master_dr_recovery (
       command   => "touch ${working_dir}/activated",
       path      => '/bin:/usr/bin',
       logoutput => true,
+      require   => [ File['dr_backup_script'], File['dr_restore_script']],
       onlyif    => "ping -c 4 -W 5 -t 5 ${pe_mom_ip_address}",
       creates   => "${working_dir}/recovered",
       notify    => Exec['backup_dr_mom'],
