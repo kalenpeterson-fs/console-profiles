@@ -95,6 +95,15 @@ class profiles::puppet::pe_master_dr_recovery (
       timeout     => '600',
       logoutput   => true,
       refreshonly => true,
+      notify      => Exec['cleanup_restore'],
+    }
+
+    # Perform Cleanup on Primary Master
+    exec { 'cleanup_restore':
+      command     => "ssh -o StrictHostKeyChecking=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} 'rm -f /tmp/pe_master_restore.sh; rm -f /tmp/${backup_filename}'",
+      path        => '/bin:/usr/bin',
+      logoutput   => true,
+      refreshonly => true,
     }
   }
 }
