@@ -14,7 +14,8 @@ class profiles::puppet::pe_master_dr_recovery (
   $backup_script   = "${working_dir}/pe_master_backup.sh"
   $restore_script  = "${working_dir}/pe_master_restore.sh"
   $backup_filename = "dr_recovery.${::hostname}.tar.gz"
-  $restore_command = "/tmp/pe_master_restore.sh -f /tmp/${backup_filename}"
+  $restore_rc      = "/tmp/pe_master_restore.rc"
+  $restore_command = "/tmp/pe_master_restore.sh -f /tmp/${backup_filename}; echo $? >${restore_rc}"
   #$restore_command = "echo '/tmp/pe_master_restore.sh -f /tmp/${backup_filename}'"
 
   # Manage the working dir for everything we'll do here
@@ -77,7 +78,7 @@ class profiles::puppet::pe_master_dr_recovery (
       logoutput   => true,
       onlyif      => "ssh -o ConnectTimeout=2 -o ConnectionAttempts=2 -o StrictHostKeyChecking=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} 'echo >/dev/null' >/dev/null",
       refreshonly => true,
-      notify      => Exec['scp_backup']
+      notify      => Exec['scp_backup'],
     }
 
     # Copy the Backup to Primary
@@ -87,7 +88,7 @@ class profiles::puppet::pe_master_dr_recovery (
       logoutput   => true,
       onlyif      => "ssh -o ConnectTimeout=2 -o ConnectionAttempts=2 -o StrictHostKeyChecking=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} 'echo >/dev/null' >/dev/null",
       refreshonly => true,
-      notify      => Exec['restore_backup']
+      notify      => Exec['restore_backup'],
     }
 
     # Execure the Backup Restore
