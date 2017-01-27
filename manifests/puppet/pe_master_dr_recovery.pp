@@ -106,6 +106,7 @@ class profiles::puppet::pe_master_dr_recovery (
       command     => "ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} 'rm -f /tmp/pe_master_restore.sh; rm -f /tmp/${backup_filename}'",
       path        => '/bin:/usr/bin',
       logoutput   => true,
+      onlyif      => "ssh -o ConnectTimeout=2 -o ConnectionAttempts=2 -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} 'echo >/dev/null' >/dev/null",
       refreshonly => true,
     }
   }
