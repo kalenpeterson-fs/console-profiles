@@ -3,8 +3,8 @@
 class profiles::puppet::pe_master_dr_recovery (
     $pe_mom_ip_address  = '10.227.100.70',
     $pe_mom_fqdn        = 'c6ppmav10.forsythelab.net',
-    $remote_user        = 'root',
-    $remote_user_key    = '/root/.ssh/id_rsa',
+    $remote_user        = 'puppetdr',
+    $remote_user_key    = '/home/puppetdr/.ssh/id_rsa',
     $working_dir        = '/opt/puppetlabs/dr_recovery',
 ){
 
@@ -12,12 +12,15 @@ class profiles::puppet::pe_master_dr_recovery (
   $backup_script   = "${working_dir}/pe_master_backup.sh"
   $restore_script  = "${working_dir}/pe_master_restore.sh"
   $backup_filename = "dr_recovery.${::hostname}.tar.gz"
-  $restore_command = "/tmp/pe_master_restore.sh -f /tmp/${backup_filename}"
+  $restore_command = "sudo /tmp/pe_master_restore.sh -f /tmp/${backup_filename}"
 
   # Manage the working dir for everything we'll do here
   file { 'working_dir':
     ensure => directory,
     path   => $working_dir,
+    owner  => $remote_user,
+    group  => 'root',
+    mode   => '0755',
   }
 
   # Deploy the backup script
