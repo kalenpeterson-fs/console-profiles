@@ -72,37 +72,38 @@ class profiles::puppet::pe_master_dr_recovery (
 
     # Copy the Restore Script to Primary
     exec { 'scp_restore_script':
-      command     => "scp -p -o StrictHostKeyChecking=no -i ${remote_user_key} ${restore_script} ${remote_user}@${pe_mom_ip_address}:/tmp",
+      command     => "scp -p -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${remote_user_key} ${restore_script} ${remote_user}@${pe_mom_ip_address}:/tmp",
       path        => '/bin:/usr/bin',
       logoutput   => true,
-      onlyif      => "ssh -o ConnectTimeout=2 -o ConnectionAttempts=2 -o StrictHostKeyChecking=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} 'echo >/dev/null' >/dev/null",
+      onlyif      => "ssh -o ConnectTimeout=2 -o ConnectionAttempts=2 -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} 'echo >/dev/null' >/dev/null",
       refreshonly => true,
       notify      => Exec['scp_backup'],
     }
 
     # Copy the Backup to Primary
     exec { 'scp_backup':
-      command     => "scp -p -o StrictHostKeyChecking=no -i ${remote_user_key} ${working_dir}/${backup_filename} ${remote_user}@${pe_mom_ip_address}:/tmp",
+      command     => "scp -p -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${remote_user_key} ${working_dir}/${backup_filename} ${remote_user}@${pe_mom_ip_address}:/tmp",
       path        => '/bin:/usr/bin',
       logoutput   => true,
-      onlyif      => "ssh -o ConnectTimeout=2 -o ConnectionAttempts=2 -o StrictHostKeyChecking=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} 'echo >/dev/null' >/dev/null",
+      onlyif      => "ssh -o ConnectTimeout=2 -o ConnectionAttempts=2 -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} 'echo >/dev/null' >/dev/null",
       refreshonly => true,
       notify      => Exec['restore_backup'],
     }
 
     # Execure the Backup Restore
     exec { 'restore_backup':
-      command     => "ssh -o StrictHostKeyChecking=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} '${restore_command}'; touch ${working_dir}/recovered",
+      command     => "ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} '${restore_command}'; touch ${working_dir}/recovered",
       path        => '/bin:/usr/bin',
       timeout     => '600',
       logoutput   => true,
+      onlyif      => "ssh -o ConnectTimeout=2 -o ConnectionAttempts=2 -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} 'echo >/dev/null' >/dev/null",
       refreshonly => true,
       notify      => Exec['cleanup_restore'],
     }
 
     # Perform Cleanup on Primary Master
     exec { 'cleanup_restore':
-      command     => "ssh -o StrictHostKeyChecking=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} 'rm -f /tmp/pe_master_restore.sh; rm -f /tmp/${backup_filename}'",
+      command     => "ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} 'rm -f /tmp/pe_master_restore.sh; rm -f /tmp/${backup_filename}'",
       path        => '/bin:/usr/bin',
       logoutput   => true,
       refreshonly => true,
