@@ -63,7 +63,7 @@ class profiles::puppet::pe_master_dr_recovery (
 
     # Perform the Backup on the DR Master
     exec { 'backup_dr_mom':
-      command     => "${backup_script} -d ${working_dir} -n ${backup_filename}",
+      command     => "su ${remote_user} -c 'sudo ${backup_script} -d ${working_dir} -n ${backup_filename}'",
       path        => '/bin:/usr/bin',
       logoutput   => true,
       refreshonly => true,
