@@ -92,7 +92,7 @@ class profiles::puppet::pe_master_dr_recovery (
 
     # Execure the Backup Restore
     exec { 'restore_backup':
-      command     => "ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} '${restore_command}'; touch ${working_dir}/recovered",
+      command     => "ssh -t -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${remote_user_key} ${remote_user}@${pe_mom_ip_address} '${restore_command}'; touch ${working_dir}/recovered",
       path        => '/bin:/usr/bin',
       timeout     => '600',
       logoutput   => true,
